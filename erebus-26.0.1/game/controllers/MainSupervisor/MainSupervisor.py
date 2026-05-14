@@ -180,6 +180,19 @@ class Erebus(Supervisor):
 
         self.rws.send("update", f"0,0,{self.max_time},0")
 
+        # LOP AMOUNT
+        self.lop_amount: int = 0
+
+        self.miss_ident_count: int = 0
+
+        self.signs: dict = {"H": 0,
+                            "S": 0,
+                            "U": 0,
+                            "C": 0,
+                            "F": 0,
+                            "O": 0,
+                            "P": 0}
+
         # Connection
         self.connection = Connection()
         self.connection.on_client_connected(self.client_connected)
@@ -187,6 +200,7 @@ class Erebus(Supervisor):
     
     def client_connected(self):
         self.connection.send_binary(bytes(self._get_current_world(), "utf8"))
+
     def handle_message(self, type, data):
         if type == 0:
             map_name = data.decode("utf8")
@@ -226,6 +240,7 @@ class Erebus(Supervisor):
         else:
             # Mensaje desconocido!
             print(f"Recibí un mensaje de tipo {type} con data {data}")
+
     def load_cognitive_targets(self):
         targets = self.getFromDef('TARGETGROUP').getField("children")
         
