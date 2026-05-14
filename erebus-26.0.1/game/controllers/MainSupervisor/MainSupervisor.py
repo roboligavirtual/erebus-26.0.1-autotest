@@ -117,7 +117,7 @@ class Erebus(Supervisor):
 
         # Max real world time is max_time + 1 min or 125% of max_time
         # which ever is greater
-        self._max_real_world_time: int = int(max(self.max_time + 60000,
+        self._max_real_world_time: int = int(max(self.max_time + 60,
                                                 self.max_time * 1.25))
 
         # Load targets (we need to do this BEFORE initializing victim manager)
