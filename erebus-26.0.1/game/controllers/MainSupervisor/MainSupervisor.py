@@ -45,6 +45,8 @@ from typing import Sequence, cast
 
 from controller.wb import wb
 
+from connection import Connection
+
 class GameState(Enum):
     MATCH_NOT_STARTED = 1
     MATCH_RUNNING = 2
