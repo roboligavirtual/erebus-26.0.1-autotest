@@ -180,6 +180,13 @@ class Erebus(Supervisor):
 
         self.rws.send("update", f"0,0,{self.max_time},0")
 
+        # Connection
+        self.connection = Connection()
+        self.connection.on_client_connected(self.client_connected)
+        self.connection.on_message_received(self.handle_message)
+    
+    def client_connected(self):
+        self.connection.send_binary(bytes(self._get_current_world(), "utf8"))
     def load_cognitive_targets(self):
         targets = self.getFromDef('TARGETGROUP').getField("children")
         
