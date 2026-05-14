@@ -696,6 +696,8 @@ class Erebus(Supervisor):
 
             self.robot_obj.victim_identified = True
             nearby_issue.identified = True
+        
+            self.signs[est_vic_type] += 1
 
         if misidentification:
             self.robot_obj.increase_score(f"Misidentification of {name}",
