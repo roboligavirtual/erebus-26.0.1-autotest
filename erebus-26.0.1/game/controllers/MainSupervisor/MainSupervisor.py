@@ -187,6 +187,45 @@ class Erebus(Supervisor):
     
     def client_connected(self):
         self.connection.send_binary(bytes(self._get_current_world(), "utf8"))
+    def handle_message(self, type, data):
+        if type == 0:
+            map_name = data.decode("utf8")
+            self.worldLoad(map_name)
+        elif type == 1:
+            self._map_ans.writeJSON(self._get_current_world() + "_map.json")
+            with open(f"{self._get_current_world()}_expected.txt", "w") as f:
+                for row in self._map_sol:
+                    for col in row:
+                        f.write(col)
+                    f.write("\n")
+            self._max_real_world_time = self.max_time * 10
+            self._game_state = GameState.MATCH_RUNNING
+            self.simulation_mode = self.SIMULATION_MODE_FAST
+            self.rws.update_history("runPressed")
+        elif type == 2:
+            idx = int.from_bytes(data, "little")
+            subhistory = self.robot_obj.history.master_history[idx:]
+            self.connection.send_json(subhistory)
+        elif type == 3:
+            self.connection.send_json({
+                "game_state": self._game_state,
+                "final_score": self.robot_obj.get_score(),
+                "time_elapsed": round(self.time_elapsed, 2),
+                "lop_amount": self.lop_amount,
+                "map_correctness": self.robot_obj.map_score_percent,
+                "miss_identification_count": self.miss_ident_count,
+                "P_count": self.signs["P"],
+                "H_count": self.signs["H"],
+                "S_count": self.signs["S"],
+                "U_count": self.signs["U"],
+                "C_count": self.signs["C"],
+                "F_count": self.signs["F"],
+                "O_count": self.signs["O"]
+                #TODO (Martu): Evaluate if exit bonus first, then send it
+            })
+        else:
+            # Mensaje desconocido!
+            print(f"Recibí un mensaje de tipo {type} con data {data}")
     def load_cognitive_targets(self):
         targets = self.getFromDef('TARGETGROUP').getField("children")
         
