@@ -702,6 +702,8 @@ class Erebus(Supervisor):
         if misidentification:
             self.robot_obj.increase_score(f"Misidentification of {name}",
                                           -5)
+            self.miss_ident_count += 1
+            
 
     def _process_message(self, robot_message: list[Any]) -> None:
         """Processes the messages recieved from the competitor's robot's emitter
