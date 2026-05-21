@@ -217,3 +217,72 @@ def calculateScore(
     """
     return _calculate_map_completeness(np.array(answer_matrices), 
                                        np.array(sub_matrix))
+
+
+def write_comparison_html(
+    path: str,
+    answer_matrices: Union[list, npt.NDArray],
+    sub_matrix: Union[list, npt.NDArray]
+) -> None:
+    """Write an HTML file with the expected map (plain) and the submitted map
+    (aligned, no rotation) with incorrect cells highlighted in red.
+
+    Args:
+        path (str): Destination file path.
+        answer_matrices (Union[list, npt.NDArray]): Correct answer matrix.
+        sub_matrix (Union[list, npt.NDArray]): Submitted map matrix.
+    """
+    ans = np.array(answer_matrices)
+    sub = np.array(sub_matrix)
+
+    try:
+        aligned = _align(ans, sub)
+        _, correct_matrix = _calculate_completeness(ans, aligned)
+    except Exception as e:
+        Console.log_err(f"write_comparison_html: alignment error: {e}")
+        return
+
+    def _map_to_html_rows(matrix, correct_mat=None):
+        rows = []
+        for i in range(len(matrix)):
+            cells = []
+            for j in range(len(matrix[0])):
+                cell = str(matrix[i][j])
+                if correct_mat is not None:
+                    val = correct_mat[i][j]
+                    if val == 0:
+                        cells.append(f'<span style="background:#e74c3c;color:#fff">{cell}</span>')
+                    else:
+                        cells.append(cell)
+                else:
+                    cells.append(cell)
+            rows.append("".join(cells))
+        return "<br>".join(rows)
+
+    expected_html = _map_to_html_rows(ans)
+    submitted_html = _map_to_html_rows(aligned, correct_matrix if len(correct_matrix) > 0 else None)
+
+    html = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Comparacion de mapas</title>
+<style>
+  body {{ font-family: monospace; font-size: 14px; padding: 20px; }}
+  h2 {{ margin-top: 30px; }}
+  .map {{ background: #f4f4f4; padding: 12px; display: inline-block;
+          line-height: 1.4; border: 1px solid #ccc; }}
+  span {{ padding: 0 1px; }}
+</style>
+</head>
+<body>
+<h2>Mapa esperado</h2>
+<div class="map">{expected_html}</div>
+<h2>Mapa enviado <small style="color:#888">(rojo = incorrecto)</small></h2>
+<div class="map">{submitted_html}</div>
+</body>
+</html>
+"""
+
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(html)
