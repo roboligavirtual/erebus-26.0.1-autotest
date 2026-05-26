@@ -271,8 +271,8 @@ def write_comparison_html(
   body {{ font-family: monospace; font-size: 14px; padding: 20px; }}
   h2 {{ margin-top: 30px; }}
   .map {{ background: #f4f4f4; padding: 12px; display: inline-block;
-          line-height: 1.4; border: 1px solid #ccc; }}
-  span {{ padding: 0 1px; }}
+          line-height: 1.4; border: 1px solid #ccc; white-space: pre; }}
+  span {{ padding: 0; }}
 </style>
 </head>
 <body>
