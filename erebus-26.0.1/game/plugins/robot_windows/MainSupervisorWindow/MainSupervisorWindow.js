@@ -220,7 +220,7 @@ function update (data){
 		maxTime = data[2]
 	}
 	maxTime = parseInt(maxTime);
-	let maxRealTime = Math.max(maxTime + 60, maxTime * 1.25);
+	let maxRealTime = Math.max(maxTime + 6000, maxTime * 1.25);
 	document.getElementById("timer").innerHTML = calculateTimeRemaining(data[1], maxTime);
 	document.getElementById("realWorldTimer").innerHTML = calculateTimeRemaining(data[3], maxRealTime);
 }
